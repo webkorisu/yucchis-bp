@@ -18,6 +18,12 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none; }
 .grad-text { background: linear-gradient(135deg,#5b7fe8,#9b5fe0,#5bb8e8); background-size:200% 200%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmer 4s ease infinite; }
 .blob { position:fixed; border-radius:50%; filter:blur(40px); pointer-events:none; transform:translate(-50%,-50%); }
 select { appearance:none; -webkit-appearance:none; }
+@media print {
+  body { background: white !important; }
+  .blob, .no-print { display:none !important; }
+  .print-card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+  #app { padding: 0; }
+}
 </style>
 </head>
 <body>
@@ -100,7 +106,7 @@ function App() {
   if (!activeUser) return e('div', {
     style:{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:32, position:"relative", overflow:"hidden" }
   },
-    blobs.map(([l,t],i) => e('div',{ key:i, className:"blob", style:{ width:220, height:220, background:i%2===0?"rgba(165,192,255,0.25)":"rgba(192,132,245,0.2)", top:t, left:l, zIndex:0 } })),
+    blobs.map(([l,t],i) => e('div',{ key:i, className:"blob", style:{ width:220, height:220, background:i%2===0?"rgba(165,192,255,0.25)":"rgba(192,132,245,0.2)", top:t, left:l, zIndex:-1 } })),
     e('div',{ style:{ position:"relative", zIndex:1, textAlign:"center" } },
       e('div',{ style:{ fontSize:52, marginBottom:8, animation:"bounce 2s ease-in-out infinite" } }, "💙"),
       e('div',{ style:{ fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:"0.7rem", letterSpacing:"0.28em", marginBottom:2, background:"linear-gradient(135deg,#7b9ef0,#c084f5,#7dd3f5)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" } }, "✿ YUCCHI'S ✿"),
@@ -134,13 +140,13 @@ function App() {
   },
     // blobs
     [["8%","12%"],["88%","8%"],["82%","88%"],["10%","85%"]].map(([l,t],i)=>
-      e('div',{key:i,className:"blob",style:{width:200,height:200,background:i%2===0?"rgba(165,192,255,0.2)":"rgba(192,132,245,0.18)",top:t,left:l,zIndex:0}})
+      e('div',{key:i,className:"blob",style:{width:200,height:200,background:i%2===0?"rgba(165,192,255,0.2)":"rgba(192,132,245,0.18)",top:t,left:l,zIndex:-1}})
     ),
     // header
     e('div',{ style:{ position:"relative", zIndex:1, background:"rgba(255,255,255,0.75)", backdropFilter:"blur(12px)", borderBottom:"1.5px solid rgba(165,192,255,0.3)", padding:"16px 20px", display:"flex", alignItems:"center", justifyContent:"space-between" } },
       e('div',null,
-        e('div',{ style:{ fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:"1.25rem", background:"linear-gradient(135deg,#5b7fe8,#9b5fe0,#5bb8e8)", backgroundSize:"200% 200%", animation:"shimmer 4s ease infinite", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" } }, "✿ YUCCHI'S BLOOD PRESSURE LOG"),
-        e('div',{ style:{ fontSize:14, color:user.color, fontWeight:800, letterSpacing:"0.05em", fontFamily:"'M PLUS Rounded 1c',sans-serif" } }, user.name+"の記録")
+        e('div',{ style:{ fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:"0.75rem", letterSpacing:"0.05em", background:"linear-gradient(135deg,#5b7fe8,#9b5fe0,#5bb8e8)", backgroundSize:"200% 200%", animation:"shimmer 4s ease infinite", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" } }, "✿ YUCCHI'S BLOOD PRESSURE LOG"),
+        e('div',{ style:{ fontSize:18, color:user.color, fontWeight:800, letterSpacing:"0.05em", fontFamily:"'M PLUS Rounded 1c',sans-serif" } }, user.name+"の記録")
       ),
       e('button',{ onClick:()=>{ setActiveUser(null); setSys(""); setDia(""); setCustomSys(false); setCustomDia(false); }, style:{ padding:"8px 16px", borderRadius:14, border:`1.5px solid ${user.color}44`, background:user.bg, color:user.color, fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:12, cursor:"pointer" } }, "🏠 HOMEへ")
     ),
@@ -237,8 +243,15 @@ function App() {
           e(AveRow,{ label:`全期間平均（${userRecords.length}回）`, aSys:Math.round(userRecords.reduce((s,r)=>s+r.systolic,0)/userRecords.length), aDia:Math.round(userRecords.reduce((s,r)=>s+r.diastolic,0)/userRecords.length), st:BPStatus(Math.round(userRecords.reduce((s,r)=>s+r.systolic,0)/userRecords.length)), userColor:user.color })
         )
       ),
+      // PDF button
+      userRecords.length > 0 && e('div',{ style:{ textAlign:"center", marginBottom:12 } },
+        e('button',{
+          onClick: function(){ window.print(); },
+          style:{ padding:"12px 32px", borderRadius:16, border:"none", background:user.grad, color:"white", fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:14, cursor:"pointer", boxShadow:`0 4px 16px ${user.color}44` }
+        }, "🖨️ PDF保存")
+      ),
       // history
-      userRecords.length > 0 && e('div',{ style:{ background:"rgba(255,255,255,0.88)", borderRadius:22, padding:18, boxShadow:`0 4px 20px ${user.color}18`, border:`1.5px solid ${user.color}22` } },
+      userRecords.length > 0 && e('div',{ className:"print-card", style:{ background:"rgba(255,255,255,0.88)", borderRadius:22, padding:18, boxShadow:`0 4px 20px ${user.color}18`, border:`1.5px solid ${user.color}22` } },
         e('p',{ style:{ margin:"0 0 14px", fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:13, color:"#9999cc" } }, "📋 記録履歴"),
         e('div',{ style:{ display:"flex", flexDirection:"column", gap:8 } },
           userRecords.map(r => {
