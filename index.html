@@ -4,285 +4,403 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>✿ YUCCHI'S BLOOD PRESSURE LOG</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;800&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Zen Maru Gothic', sans-serif; background: linear-gradient(160deg,#e8eeff 0%,#f3e8ff 50%,#e8f4ff 100%); min-height: 100vh; }
 @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 @keyframes shimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-@keyframes pop { 0%{transform:scale(0.92)} 100%{transform:scale(1)} }
+@keyframes pop { 0%{transform:scale(0.94)} 100%{transform:scale(1)} }
 input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none; }
-.grad-text { background: linear-gradient(135deg,#5b7fe8,#9b5fe0,#5bb8e8); background-size:200% 200%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmer 4s ease infinite; }
-.blob { position:fixed; border-radius:50%; filter:blur(40px); pointer-events:none; transform:translate(-50%,-50%); }
 select { appearance:none; -webkit-appearance:none; }
+.blob { position:fixed; border-radius:50%; filter:blur(40px); pointer-events:none; transform:translate(-50%,-50%); z-index:-1; }
+.shimmer-text { background:linear-gradient(135deg,#5b7fe8,#9b5fe0,#5bb8e8); background-size:200% 200%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmer 4s ease infinite; }
+#home { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; }
+.user-btn { width:260px; padding:18px 32px; border-radius:20px; border:2.5px solid transparent; color:white; font-family:'M PLUS Rounded 1c',sans-serif; font-weight:800; font-size:17px; cursor:pointer; text-shadow:0 1px 4px rgba(0,0,0,0.18); margin-bottom:14px; display:block; }
+#main { display:none; padding-bottom:60px; }
+.header { background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border-bottom:1.5px solid rgba(165,192,255,0.3); padding:16px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+.home-btn { padding:8px 16px; border-radius:14px; font-family:'M PLUS Rounded 1c',sans-serif; font-weight:800; font-size:12px; cursor:pointer; background:transparent; }
+.content { padding:20px 18px; max-width:480px; margin:0 auto; }
+.input-wrap { border-radius:24px; padding:3px; margin-bottom:18px; background-size:300% 300%; animation:shimmer 5s linear infinite; }
+.input-card { background:rgba(255,255,255,0.93); border-radius:22px; padding:22px 20px; }
+.input-row { display:flex; gap:10px; align-items:flex-end; margin-bottom:14px; }
+.input-col { flex:1; text-align:center; }
+.col-label { font-size:10px; color:#bbb; display:block; margin-bottom:5px; letter-spacing:0.1em; }
+.bp-select, .bp-input { width:100%; padding:12px 6px; border-radius:16px; font-size:22px; font-weight:800; text-align:center; outline:none; box-sizing:border-box; font-family:'M PLUS Rounded 1c',sans-serif; transition:all 0.2s; cursor:pointer; }
+.bp-input { margin-top:6px; padding:10px 6px; border-radius:14px; cursor:text; display:none; }
+.save-btn { width:100%; padding:14px; border-radius:16px; border:none; font-family:'M PLUS Rounded 1c',sans-serif; font-weight:800; font-size:15px; cursor:pointer; transition:all 0.2s; color:white; }
+.save-btn:disabled { background:#eee !important; color:#ccc; cursor:not-allowed; box-shadow:none !important; }
+.card { background:rgba(255,255,255,0.88); border-radius:22px; padding:18px 16px; margin-bottom:18px; }
+.card-title { font-family:'M PLUS Rounded 1c',sans-serif; font-weight:800; font-size:13px; color:#9999cc; margin-bottom:10px; }
+.graph-dates { display:flex; justify-content:space-between; margin-top:6px; font-size:10px; color:#bbb; }
+.legend { display:flex; gap:16px; justify-content:center; margin-top:4px; }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700; }
+.legend-line { width:16px; height:3px; border-radius:2px; }
+.ave-row { padding:9px 14px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; margin-top:6px; }
+.pdf-btn { display:block; width:100%; padding:12px; border-radius:16px; border:none; color:white; font-family:'M PLUS Rounded 1c',sans-serif; font-weight:800; font-size:14px; cursor:pointer; margin-bottom:18px; }
+.rec-item { display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:14px; margin-bottom:8px; }
+.rec-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.del-btn { background:none; border:none; color:#ddd; cursor:pointer; font-size:15px; padding:2px 4px; }
+.empty { text-align:center; padding:40px 0; color:#ccc; }
 @media print {
-  body { background: white !important; }
-  .blob, .no-print { display:none !important; }
-  .print-card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
-  #app { padding: 0; }
+  body { background:white !important; }
+  .blob,.pdf-btn,.del-btn,.home-btn { display:none !important; }
+  .card { box-shadow:none !important; border:1px solid #ddd !important; }
+  .header { position:static; background:white !important; }
 }
 </style>
 </head>
 <body>
-<div id="app"></div>
-<script>
-const { useState, useEffect, useRef } = React;
 
-const USERS = [
-  { id: "user1", name: "自分", color: "#7b9ef0", grad: "linear-gradient(135deg, #a5c0ff, #7b9ef0)", bg: "#f0f4ff" },
-  { id: "user2", name: "家族", color: "#c084f5", grad: "linear-gradient(135deg, #e0b4ff, #c084f5)", bg: "#f8f0ff" },
-];
-const STORAGE_KEY = "bp_yucchi_v1";
+<div class="blob" style="width:200px;height:200px;background:rgba(165,192,255,0.2);top:12%;left:8%"></div>
+<div class="blob" style="width:200px;height:200px;background:rgba(192,132,245,0.18);top:8%;left:88%"></div>
+<div class="blob" style="width:200px;height:200px;background:rgba(165,192,255,0.2);top:88%;left:82%"></div>
+<div class="blob" style="width:200px;height:200px;background:rgba(192,132,245,0.18);top:85%;left:10%"></div>
+
+<!-- HOME -->
+<div id="home">
+  <div style="text-align:center;position:relative;z-index:1">
+    <div style="font-size:52px;margin-bottom:8px;animation:bounce 2s ease-in-out infinite">💙</div>
+    <div class="shimmer-text" style="font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:0.7rem;letter-spacing:0.28em;margin-bottom:2px">✿ YUCCHI'S ✿</div>
+    <h1 class="shimmer-text" style="font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:1.05rem;margin:0 0 28px;line-height:1.4">BLOOD PRESSURE LOG</h1>
+    <button class="user-btn" id="btn-user1" onclick="selectUser('user1')">自分</button>
+    <button class="user-btn" id="btn-user2" onclick="selectUser('user2')">家族</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="header">
+    <div>
+      <div class="shimmer-text" style="font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:0.75rem;letter-spacing:0.05em">✿ YUCCHI'S BLOOD PRESSURE LOG</div>
+      <div id="header-user" style="font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:18px"></div>
+    </div>
+    <button class="home-btn" id="home-btn" onclick="goHome()">🏠 HOMEへ</button>
+  </div>
+  <div class="content">
+    <div class="input-wrap" id="input-wrap">
+      <div class="input-card">
+        <div style="font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:14px;color:#7a7aaa;margin-bottom:16px">💙 血圧を入力</div>
+        <div class="input-row">
+          <div class="input-col">
+            <span class="col-label">上（収縮期）</span>
+            <select class="bp-select" id="sys-select" onchange="onSysChange(this.value)"></select>
+            <input class="bp-input" id="sys-input" type="number" inputmode="numeric" placeholder="数値入力" oninput="onSysInput(this.value)">
+          </div>
+          <div style="font-size:22px;color:#ccc;padding-bottom:10px">/</div>
+          <div class="input-col">
+            <span class="col-label">下（拡張期）</span>
+            <select class="bp-select" id="dia-select" onchange="onDiaChange(this.value)"></select>
+            <input class="bp-input" id="dia-input" type="number" inputmode="numeric" placeholder="数値入力" oninput="onDiaInput(this.value)">
+          </div>
+          <div style="font-size:10px;color:#bbb;padding-bottom:12px">mmHg</div>
+        </div>
+        <div id="status-bar" style="display:none;border-radius:12px;padding:8px 14px;margin-bottom:12px;display:none;justify-content:space-between;align-items:center;animation:pop 0.3s ease"></div>
+        <button class="save-btn" id="save-btn" onclick="saveRecord()" disabled>記録する</button>
+      </div>
+    </div>
+    <div class="card" id="graph-card" style="display:none">
+      <div class="card-title" id="graph-title"></div>
+      <div id="graph-svg-wrap"></div>
+      <div class="graph-dates" id="graph-dates"></div>
+      <div class="legend" id="legend"></div>
+      <div id="ave-rows"></div>
+    </div>
+    <button class="pdf-btn" id="pdf-btn" style="display:none" onclick="window.print()">🖨️ PDF保存</button>
+    <div class="card" id="history-card" style="display:none;padding:18px">
+      <div class="card-title">📋 記録履歴</div>
+      <div id="history-list"></div>
+    </div>
+    <div class="empty" id="empty-msg">
+      <div style="font-size:44px">🌸</div>
+      <p style="margin:10px 0 0;font-size:13px;font-family:'M PLUS Rounded 1c',sans-serif">まだ記録がないよ✿</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'bp_yucchi_v1';
+const USERS = {
+  user1: { name:'自分', color:'#7b9ef0', grad:'linear-gradient(135deg,#a5c0ff,#7b9ef0)', bg:'#f0f4ff' },
+  user2: { name:'家族', color:'#c084f5', grad:'linear-gradient(135deg,#e0b4ff,#c084f5)', bg:'#f8f0ff' }
+};
+let activeUser = null, sysVal = '', diaVal = '', customSys = false, customDia = false;
 
 function getRecords() {
-  try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : { user1:[], user2:[] }; }
-  catch { return { user1:[], user2:[] }; }
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {user1:[],user2:[]}; }
+  catch { return {user1:[],user2:[]}; }
 }
+function saveRecords(r) { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); }
 
-function BPStatus(sys) {
+function bpStatus(sys) {
   if (!sys) return null;
-  if (sys < 120) return { label:"正常 ✿", color:"#5ec4a8" };
-  if (sys < 130) return { label:"正常高値", color:"#a8d46f" };
-  if (sys < 140) return { label:"高値血圧", color:"#f5c842" };
-  return { label:"高血圧 !", color:"#f07070" };
+  if (sys < 120) return {label:'正常 ✿', color:'#5ec4a8'};
+  if (sys < 130) return {label:'正常高値', color:'#a8d46f'};
+  if (sys < 140) return {label:'高値血圧', color:'#f5c842'};
+  return {label:'高血圧 !', color:'#f07070'};
 }
 
-function AveRow({ label, aSys, aDia, st, userColor }) {
-  return React.createElement('div', {
-    style: { padding:"9px 14px", borderRadius:12, background:`linear-gradient(135deg,${userColor}08,#c084f508)`, border:`1px solid ${userColor}18`, display:"flex", alignItems:"center", justifyContent:"space-between" }
-  },
-    React.createElement('span', { style:{ fontSize:10, color:"#bbb", fontWeight:700 } }, label),
-    React.createElement('div', { style:{ display:"flex", alignItems:"baseline", gap:3 } },
-      React.createElement('span', { style:{ fontSize:17, fontWeight:800, color:userColor, fontFamily:"'M PLUS Rounded 1c',sans-serif" } }, aSys),
-      React.createElement('span', { style:{ fontSize:11, color:"#ccc" } }, "/"),
-      React.createElement('span', { style:{ fontSize:14, fontWeight:700, color:"#c084f5" } }, aDia),
-      React.createElement('span', { style:{ fontSize:10, color:"#bbb", marginLeft:2 } }, "mmHg"),
-      React.createElement('span', { style:{ fontSize:11, fontWeight:800, color:st?.color, marginLeft:4 } }, st?.label)
-    )
-  );
+// HOME button styles
+window.onload = function() {
+  ['user1','user2'].forEach(uid => {
+    const u = USERS[uid];
+    const btn = document.getElementById('btn-'+uid);
+    btn.style.backgroundImage = u.grad + ',linear-gradient(white,white)';
+    btn.style.backgroundOrigin = 'border-box';
+    btn.style.backgroundClip = 'padding-box, border-box';
+    btn.style.boxShadow = '0 4px 20px ' + u.color + '44';
+  });
+};
+
+function selectUser(uid) {
+  activeUser = uid;
+  const u = USERS[uid];
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  document.getElementById('header-user').textContent = u.name + 'の記録';
+  document.getElementById('header-user').style.color = u.color;
+  document.getElementById('home-btn').style.borderColor = u.color + '44';
+  document.getElementById('home-btn').style.color = u.color;
+  document.getElementById('home-btn').style.border = '1.5px solid ' + u.color + '44';
+  document.getElementById('input-wrap').style.background = 'linear-gradient(135deg,' + u.color + '88,#c8b4ff88,' + u.color + '66)';
+  document.getElementById('input-wrap').style.boxShadow = '0 4px 24px ' + u.color + '22';
+  sysVal = ''; diaVal = ''; customSys = false; customDia = false;
+  buildSelects();
+  render();
 }
 
-function App() {
-  const [activeUser, setActiveUser] = useState(null);
-  const [records, setRecords] = useState(getRecords);
-  const [sys, setSys] = useState("");
-  const [dia, setDia] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [customSys, setCustomSys] = useState(false);
-  const [customDia, setCustomDia] = useState(false);
+function goHome() {
+  activeUser = null; sysVal = ''; diaVal = ''; customSys = false; customDia = false;
+  document.getElementById('home').style.display = 'flex';
+  document.getElementById('main').style.display = 'none';
+}
 
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }, [records]);
+function buildSelects() {
+  const u = USERS[activeUser];
+  const records = getRecords()[activeUser] || [];
+  const last = records[0];
+  const baseSys = last ? last.systolic : 120;
+  const baseDia = last ? last.diastolic : 80;
+  const sysOpts = Array.from({length:41},(_,i)=>baseSys-20+i).filter(v=>v>=60&&v<=220);
+  const diaOpts = Array.from({length:41},(_,i)=>baseDia-20+i).filter(v=>v>=30&&v<=140);
 
-  const user = USERS.find(u => u.id === activeUser);
-  const userRecords = activeUser ? (records[activeUser] || []) : [];
-  const chartData = [...userRecords].reverse().slice(-14);
-  const lastRec = userRecords[0] || null;
-  const baseSys = lastRec ? lastRec.systolic : 120;
-  const baseDia = lastRec ? lastRec.diastolic : 80;
-  const sysOptions = Array.from({length:41},(_,i) => baseSys-20+i).filter(v => v>=60 && v<=220);
-  const diaOptions = Array.from({length:41},(_,i) => baseDia-20+i).filter(v => v>=30 && v<=140);
+  const ss = document.getElementById('sys-select');
+  ss.innerHTML = '<option value="">--</option>' + sysOpts.map(v=>`<option value="${v}">${v}</option>`).join('') + '<option value="other">その他…</option>';
+  ss.style.cssText = `border:2.5px solid ${sysVal?u.color:'#e8e8f0'};color:${sysVal?u.color:'#bbb'};background:${sysVal?u.bg:'white'}`;
+  ss.value = customSys ? 'other' : sysVal;
 
-  function handleSave() {
-    if (!sys || !dia) return;
-    const rec = { id:Date.now(), systolic:Number(sys), diastolic:Number(dia),
-      date:new Date().toLocaleDateString("ja-JP"),
-      time:new Date().toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"}) };
-    setRecords(prev => ({ ...prev, [activeUser]:[rec,...(prev[activeUser]||[])] }));
-    setSys(""); setDia(""); setCustomSys(false); setCustomDia(false);
-    setSaved(true); setTimeout(()=>setSaved(false), 2000);
+  const ds = document.getElementById('dia-select');
+  ds.innerHTML = '<option value="">--</option>' + diaOpts.map(v=>`<option value="${v}">${v}</option>`).join('') + '<option value="other">その他…</option>';
+  ds.style.cssText = `border:2.5px solid ${diaVal?'#c084f5':'#e8e8f0'};color:${diaVal?'#c084f5':'#bbb'};background:${diaVal?'#f8f0ff':'white'}`;
+  ds.value = customDia ? 'other' : diaVal;
+
+  const si = document.getElementById('sys-input');
+  si.style.border = '2.5px solid ' + u.color;
+  si.style.color = u.color;
+  si.style.background = u.bg;
+  si.style.display = customSys ? 'block' : 'none';
+
+  const di = document.getElementById('dia-input');
+  di.style.border = '2.5px solid #c084f5';
+  di.style.color = '#c084f5';
+  di.style.background = '#f8f0ff';
+  di.style.display = customDia ? 'block' : 'none';
+}
+
+function onSysChange(v) {
+  const u = USERS[activeUser];
+  if (v === 'other') {
+    customSys = true; sysVal = '';
+    const si = document.getElementById('sys-input');
+    si.style.display = 'block'; si.value = ''; si.focus();
+  } else {
+    customSys = false; sysVal = v;
+    document.getElementById('sys-input').style.display = 'none';
+  }
+  const ss = document.getElementById('sys-select');
+  ss.style.border = '2.5px solid ' + (sysVal ? u.color : '#e8e8f0');
+  ss.style.color = sysVal ? u.color : '#bbb';
+  ss.style.background = sysVal ? u.bg : 'white';
+  updateStatus(); updateSaveBtn();
+}
+function onSysInput(v) { sysVal = v; updateStatus(); updateSaveBtn(); }
+
+function onDiaChange(v) {
+  if (v === 'other') {
+    customDia = true; diaVal = '';
+    const di = document.getElementById('dia-input');
+    di.style.display = 'block'; di.value = ''; di.focus();
+  } else {
+    customDia = false; diaVal = v;
+    document.getElementById('dia-input').style.display = 'none';
+  }
+  const ds = document.getElementById('dia-select');
+  ds.style.border = '2.5px solid ' + (diaVal ? '#c084f5' : '#e8e8f0');
+  ds.style.color = diaVal ? '#c084f5' : '#bbb';
+  ds.style.background = diaVal ? '#f8f0ff' : 'white';
+  updateStatus(); updateSaveBtn();
+}
+function onDiaInput(v) { diaVal = v; updateStatus(); updateSaveBtn(); }
+
+function updateStatus() {
+  const bar = document.getElementById('status-bar');
+  if (sysVal && diaVal) {
+    const st = bpStatus(Number(sysVal));
+    bar.style.display = 'flex';
+    bar.style.background = st.color + '18';
+    bar.style.border = '1.5px solid ' + st.color + '44';
+    bar.innerHTML = `<span style="font-size:12px;color:#aaa">判定</span><span style="font-weight:800;font-size:14px;color:${st.color}">${st.label}</span>`;
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function updateSaveBtn() {
+  const u = USERS[activeUser];
+  const btn = document.getElementById('save-btn');
+  if (sysVal && diaVal) {
+    btn.disabled = false;
+    btn.style.background = u.grad;
+    btn.style.boxShadow = '0 4px 16px ' + u.color + '44';
+  } else {
+    btn.disabled = true;
+    btn.style.background = '#eee';
+    btn.style.boxShadow = 'none';
+  }
+}
+
+function saveRecord() {
+  if (!sysVal || !diaVal) return;
+  const rec = {
+    id: Date.now(), systolic: Number(sysVal), diastolic: Number(diaVal),
+    date: new Date().toLocaleDateString('ja-JP'),
+    time: new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})
+  };
+  const all = getRecords();
+  all[activeUser] = [rec, ...(all[activeUser]||[])];
+  saveRecords(all);
+  sysVal = ''; diaVal = ''; customSys = false; customDia = false;
+  const btn = document.getElementById('save-btn');
+  btn.textContent = '✿ 記録しました！';
+  setTimeout(()=>{ btn.textContent = '記録する'; }, 2000);
+  buildSelects(); render();
+}
+
+function deleteRecord(id) {
+  const all = getRecords();
+  all[activeUser] = all[activeUser].filter(r => r.id !== id);
+  saveRecords(all);
+  render();
+}
+
+function render() {
+  const u = USERS[activeUser];
+  const records = getRecords()[activeUser] || [];
+  const chartData = [...records].reverse().slice(-14);
+
+  document.getElementById('empty-msg').style.display = records.length === 0 ? 'block' : 'none';
+
+  // PDF btn
+  const pdfBtn = document.getElementById('pdf-btn');
+  pdfBtn.style.display = records.length > 0 ? 'block' : 'none';
+  pdfBtn.style.background = u.grad;
+  pdfBtn.style.boxShadow = '0 4px 16px ' + u.color + '44';
+
+  // Graph
+  if (chartData.length >= 2) {
+    document.getElementById('graph-card').style.display = 'block';
+    document.getElementById('graph-title').textContent = '📈 推移グラフ（直近' + chartData.length + '回）';
+    document.getElementById('graph-svg-wrap').innerHTML = renderGraph(chartData, u);
+    document.getElementById('graph-dates').innerHTML = '<span>' + chartData[0].date + '</span><span>' + chartData[chartData.length-1].date + '</span>';
+    document.getElementById('legend').innerHTML =
+      `<div class="legend-item"><div class="legend-line" style="background:${u.color}"></div><span style="color:${u.color}">収縮期（上）</span></div>
+       <div class="legend-item"><div class="legend-line" style="background:#c084f5;opacity:0.7"></div><span style="color:#c084f5">拡張期（下）</span></div>`;
+    if (records.length >= 2) {
+      const gSys = Math.round(chartData.reduce((s,r)=>s+r.systolic,0)/chartData.length);
+      const gDia = Math.round(chartData.reduce((s,r)=>s+r.diastolic,0)/chartData.length);
+      const aSys = Math.round(records.reduce((s,r)=>s+r.systolic,0)/records.length);
+      const aDia = Math.round(records.reduce((s,r)=>s+r.diastolic,0)/records.length);
+      document.getElementById('ave-rows').innerHTML =
+        aveRowHTML('グラフ期間平均（'+chartData.length+'回）', gSys, gDia, bpStatus(gSys), u) +
+        aveRowHTML('全期間平均（'+records.length+'回）', aSys, aDia, bpStatus(aSys), u);
+    }
+  } else {
+    document.getElementById('graph-card').style.display = 'none';
   }
 
-  function deleteRecord(id) {
-    setRecords(prev => ({ ...prev, [activeUser]:prev[activeUser].filter(r=>r.id!==id) }));
+  // History
+  if (records.length > 0) {
+    document.getElementById('history-card').style.display = 'block';
+    document.getElementById('history-list').innerHTML = records.map(r => {
+      const st = bpStatus(r.systolic);
+      return `<div class="rec-item" style="background:linear-gradient(135deg,${u.color}08,#c084f508);border:1px solid ${u.color}18">
+        <div class="rec-dot" style="background:${st?.color||'#ccc'}"></div>
+        <div style="flex:1">
+          <span style="font-weight:800;font-size:21px;color:#444;font-family:'M PLUS Rounded 1c',sans-serif">${r.systolic}</span>
+          <span style="color:#ddd;margin:0 3px">/</span>
+          <span style="font-weight:700;font-size:16px;color:#888">${r.diastolic}</span>
+          <span style="font-size:10px;color:#bbb;margin-left:3px">mmHg</span>
+        </div>
+        <div style="text-align:right;margin-right:4px">
+          <div style="font-size:11px;font-weight:800;color:${st?.color}">${st?.label||''}</div>
+          <div style="font-size:10px;color:#ccc">${r.date} ${r.time}</div>
+        </div>
+        <button class="del-btn" onclick="deleteRecord(${r.id})">✕</button>
+      </div>`;
+    }).join('');
+  } else {
+    document.getElementById('history-card').style.display = 'none';
   }
+}
 
-  const e = React.createElement;
-  const blobs = [["15%","15%"],["85%","10%"],["80%","85%"],["15%","80%"]];
+function aveRowHTML(label, sys, dia, st, u) {
+  return `<div class="ave-row" style="background:linear-gradient(135deg,${u.color}08,#c084f508);border:1px solid ${u.color}18">
+    <span style="font-size:10px;color:#bbb;font-weight:700">${label}</span>
+    <div style="display:flex;align-items:baseline;gap:3px">
+      <span style="font-size:17px;font-weight:800;color:${u.color};font-family:'M PLUS Rounded 1c',sans-serif">${sys}</span>
+      <span style="font-size:11px;color:#ccc">/</span>
+      <span style="font-size:14px;font-weight:700;color:#c084f5">${dia}</span>
+      <span style="font-size:10px;color:#bbb;margin-left:2px">mmHg</span>
+      <span style="font-size:11px;font-weight:800;color:${st?.color};margin-left:4px">${st?.label||''}</span>
+    </div>
+  </div>`;
+}
 
-  // ===== HOME =====
-  if (!activeUser) return e('div', {
-    style:{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:32, position:"relative", overflow:"hidden" }
-  },
-    blobs.map(([l,t],i) => e('div',{ key:i, className:"blob", style:{ width:220, height:220, background:i%2===0?"rgba(165,192,255,0.25)":"rgba(192,132,245,0.2)", top:t, left:l, zIndex:-1 } })),
-    e('div',{ style:{ position:"relative", zIndex:1, textAlign:"center" } },
-      e('div',{ style:{ fontSize:52, marginBottom:8, animation:"bounce 2s ease-in-out infinite" } }, "💙"),
-      e('div',{ style:{ fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:"0.7rem", letterSpacing:"0.28em", marginBottom:2, background:"linear-gradient(135deg,#7b9ef0,#c084f5,#7dd3f5)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" } }, "✿ YUCCHI'S ✿"),
-      e('h1',{ style:{ fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:"1.05rem", margin:"0 0 28px", lineHeight:1.4, background:"linear-gradient(135deg,#5b7fe8,#9b5fe0,#5bb8e8)", backgroundSize:"200% 200%", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", animation:"shimmer 4s ease infinite" } }, "BLOOD PRESSURE LOG"),
-      e('div',{ style:{ display:"flex", flexDirection:"column", gap:14, width:260, margin:"0 auto" } },
-        USERS.map(u => e('button',{
-          key:u.id, onClick:()=>setActiveUser(u.id),
-          style:{ padding:"18px 32px", borderRadius:20, border:"2.5px solid transparent", backgroundImage:`${u.grad}, linear-gradient(white,white)`, backgroundOrigin:"border-box", backgroundClip:"padding-box, border-box", color:"white", fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:17, cursor:"pointer", boxShadow:`0 4px 20px ${u.color}44`, textShadow:"0 1px 4px rgba(0,0,0,0.18)" }
-        }, u.name))
-      )
-    )
-  );
-
-  // ===== CHART =====
+function renderGraph(data, u) {
   const W=300, H=90, PAD=16;
-  const sysVals = chartData.map(r=>r.systolic);
-  const diaVals = chartData.map(r=>r.diastolic);
-  const allVals = [...sysVals,...diaVals];
-  const minV = allVals.length ? Math.min(...allVals)-10 : 60;
-  const maxV = allVals.length ? Math.max(...allVals)+10 : 160;
+  const sysVals = data.map(r=>r.systolic);
+  const diaVals = data.map(r=>r.diastolic);
+  const allV = [...sysVals,...diaVals];
+  const minV = Math.min(...allV)-10, maxV = Math.max(...allV)+10;
   const range = maxV-minV||80;
-  const xStep = chartData.length>1 ? (W-PAD*2)/(chartData.length-1) : 0;
+  const xStep = data.length>1 ? (W-PAD*2)/(data.length-1) : 0;
   const toY = v => H-PAD-((v-minV)/range)*(H-PAD*2);
   const toX = i => PAD+i*xStep;
-  const polyPts = vals => vals.map((v,i)=>`${toX(i)},${toY(v)}`).join(" ");
-  const status = BPStatus(Number(sys));
+  const pts = vals => vals.map((v,i)=>`${toX(i)},${toY(v)}`).join(' ');
 
-  // ===== MAIN =====
-  return e('div',{
-    style:{ minHeight:"100vh", fontFamily:"'Zen Maru Gothic',sans-serif", background:"linear-gradient(160deg,#e8eeff 0%,#f3e8ff 50%,#e8f4ff 100%)", paddingBottom:60, position:"relative", overflow:"hidden" }
-  },
-    // blobs
-    [["8%","12%"],["88%","8%"],["82%","88%"],["10%","85%"]].map(([l,t],i)=>
-      e('div',{key:i,className:"blob",style:{width:200,height:200,background:i%2===0?"rgba(165,192,255,0.2)":"rgba(192,132,245,0.18)",top:t,left:l,zIndex:-1}})
-    ),
-    // header
-    e('div',{ style:{ position:"relative", zIndex:1, background:"rgba(255,255,255,0.75)", backdropFilter:"blur(12px)", borderBottom:"1.5px solid rgba(165,192,255,0.3)", padding:"16px 20px", display:"flex", alignItems:"center", justifyContent:"space-between" } },
-      e('div',null,
-        e('div',{ style:{ fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:"0.75rem", letterSpacing:"0.05em", background:"linear-gradient(135deg,#5b7fe8,#9b5fe0,#5bb8e8)", backgroundSize:"200% 200%", animation:"shimmer 4s ease infinite", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" } }, "✿ YUCCHI'S BLOOD PRESSURE LOG"),
-        e('div',{ style:{ fontSize:18, color:user.color, fontWeight:800, letterSpacing:"0.05em", fontFamily:"'M PLUS Rounded 1c',sans-serif" } }, user.name+"の記録")
-      ),
-      e('button',{ onClick:()=>{ setActiveUser(null); setSys(""); setDia(""); setCustomSys(false); setCustomDia(false); }, style:{ padding:"8px 16px", borderRadius:14, border:`1.5px solid ${user.color}44`, background:user.bg, color:user.color, fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:12, cursor:"pointer" } }, "🏠 HOMEへ")
-    ),
-    // content
-    e('div',{ style:{ position:"relative", zIndex:1, padding:"20px 18px", maxWidth:480, margin:"0 auto" } },
-      // input card
-      e('div',{ style:{ borderRadius:24, padding:3, marginBottom:18, background:`linear-gradient(135deg,${user.color}88,#c8b4ff88,${user.color}66)`, backgroundSize:"300% 300%", animation:"shimmer 5s linear infinite", boxShadow:`0 4px 24px ${user.color}22` } },
-        e('div',{ style:{ background:"rgba(255,255,255,0.93)", borderRadius:22, padding:"22px 20px" } },
-          e('p',{ style:{ margin:"0 0 16px", fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:14, color:"#7a7aaa" } }, "💙 血圧を入力"),
-          // dropdowns
-          e('div',{ style:{ display:"flex", gap:10, alignItems:"flex-end", marginBottom:14 } },
-            // sys
-            e('div',{ style:{ flex:1, textAlign:"center" } },
-              e('label',{ style:{ fontSize:10, color:"#bbb", display:"block", marginBottom:5, letterSpacing:"0.1em" } }, "上（収縮期）"),
-              e('select',{
-                value: customSys ? "other" : sys,
-                onChange: ev => { if(ev.target.value==="other"){setSys("");setCustomSys(true);}else{setSys(ev.target.value);setCustomSys(false);} },
-                style:{ width:"100%", padding:"12px 6px", borderRadius:16, border:`2.5px solid ${sys?user.color:"#e8e8f0"}`, fontSize:20, fontWeight:800, textAlign:"center", color:sys?user.color:"#bbb", outline:"none", boxSizing:"border-box", fontFamily:"'M PLUS Rounded 1c',sans-serif", background:sys?user.bg:"white", cursor:"pointer" }
-              },
-                e('option',{value:""},"--"),
-                sysOptions.map(v=>e('option',{key:v,value:v},v)),
-                e('option',{value:"other"},"その他…")
-              ),
-              customSys && e('input',{ type:"number", inputMode:"numeric", value:sys, onChange:ev=>setSys(ev.target.value), placeholder:"数値入力", autoFocus:true, style:{ marginTop:6, width:"100%", padding:"10px 6px", borderRadius:14, border:`2.5px solid ${user.color}`, fontSize:22, fontWeight:800, textAlign:"center", color:user.color, outline:"none", boxSizing:"border-box", fontFamily:"'M PLUS Rounded 1c',sans-serif", background:user.bg } })
-            ),
-            e('div',{ style:{ fontSize:22, color:"#ccc", paddingBottom:customSys||customDia?50:10 } }, "/"),
-            // dia
-            e('div',{ style:{ flex:1, textAlign:"center" } },
-              e('label',{ style:{ fontSize:10, color:"#bbb", display:"block", marginBottom:5, letterSpacing:"0.1em" } }, "下（拡張期）"),
-              e('select',{
-                value: customDia ? "other" : dia,
-                onChange: ev => { if(ev.target.value==="other"){setDia("");setCustomDia(true);}else{setDia(ev.target.value);setCustomDia(false);} },
-                style:{ width:"100%", padding:"12px 6px", borderRadius:16, border:`2.5px solid ${dia?"#c084f5":"#e8e8f0"}`, fontSize:20, fontWeight:800, textAlign:"center", color:dia?"#c084f5":"#bbb", outline:"none", boxSizing:"border-box", fontFamily:"'M PLUS Rounded 1c',sans-serif", background:dia?"#f8f0ff":"white", cursor:"pointer" }
-              },
-                e('option',{value:""},"--"),
-                diaOptions.map(v=>e('option',{key:v,value:v},v)),
-                e('option',{value:"other"},"その他…")
-              ),
-              customDia && e('input',{ type:"number", inputMode:"numeric", value:dia, onChange:ev=>setDia(ev.target.value), placeholder:"数値入力", style:{ marginTop:6, width:"100%", padding:"10px 6px", borderRadius:14, border:"2.5px solid #c084f5", fontSize:22, fontWeight:800, textAlign:"center", color:"#c084f5", outline:"none", boxSizing:"border-box", fontFamily:"'M PLUS Rounded 1c',sans-serif", background:"#f8f0ff" } })
-            ),
-            e('div',{ style:{ fontSize:10, color:"#bbb", paddingBottom:customSys||customDia?50:12 } }, "mmHg")
-          ),
-          // status
-          sys && dia && status && e('div',{ style:{ background:`${status.color}18`, border:`1.5px solid ${status.color}44`, borderRadius:12, padding:"8px 14px", marginBottom:12, display:"flex", justifyContent:"space-between", alignItems:"center", animation:"pop 0.3s ease" } },
-            e('span',{ style:{ fontSize:12, color:"#aaa" } }, "判定"),
-            e('span',{ style:{ fontWeight:800, fontSize:14, color:status.color } }, status.label)
-          ),
-          // save button
-          e('button',{ onClick:handleSave, disabled:!sys||!dia, style:{ width:"100%", padding:"14px", borderRadius:16, border:"none", background:sys&&dia?user.grad:"#eee", color:sys&&dia?"white":"#ccc", fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:15, cursor:sys&&dia?"pointer":"not-allowed", boxShadow:sys&&dia?`0 4px 16px ${user.color}44`:"none", transition:"all 0.2s" } },
-            saved ? "✿ 記録しました！" : "記録する"
-          )
-        )
-      ),
-      // graph card
-      chartData.length >= 2 && e('div',{ style:{ background:"rgba(255,255,255,0.88)", borderRadius:22, padding:"18px 16px", marginBottom:18, boxShadow:`0 4px 20px ${user.color}18`, border:`1.5px solid ${user.color}22` } },
-        e('p',{ style:{ margin:"0 0 10px", fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:13, color:"#9999cc" } }, `📈 推移グラフ（直近${chartData.length}回）`),
-        e('svg',{ width:"100%", viewBox:`0 0 ${W} ${H}`, style:{ overflow:"visible" } },
-          e('defs',null,
-            e('linearGradient',{id:"sysGrad",x1:"0",y1:"0",x2:"1",y2:"0"},
-              e('stop',{offset:"0%",stopColor:user.color}),e('stop',{offset:"100%",stopColor:"#c084f5"})
-            ),
-            e('linearGradient',{id:"diaGrad",x1:"0",y1:"0",x2:"1",y2:"0"},
-              e('stop',{offset:"0%",stopColor:"#c084f5"}),e('stop',{offset:"100%",stopColor:"#7dd3f5"})
-            )
-          ),
-          [120,130,140].map(v=>e('line',{key:v,x1:PAD,y1:toY(v),x2:W-PAD,y2:toY(v),stroke:v===140?"#f0707044":v===130?"#f5c84222":"#5ec4a822",strokeWidth:"1",strokeDasharray:"3 4"})),
-          e('polyline',{points:polyPts(diaVals),fill:"none",stroke:"url(#diaGrad)",strokeWidth:"2.5",strokeLinecap:"round",strokeLinejoin:"round",opacity:"0.7"}),
-          e('polyline',{points:polyPts(sysVals),fill:"none",stroke:"url(#sysGrad)",strokeWidth:"3",strokeLinecap:"round",strokeLinejoin:"round"}),
-          chartData.map((r,i)=>e('g',{key:r.id},
-            e('circle',{cx:toX(i),cy:toY(r.systolic),r:"4.5",fill:user.color,stroke:"white",strokeWidth:"1.5"}),
-            e('text',{x:toX(i),y:toY(r.systolic)-9,textAnchor:"middle",fontSize:"9.5",fontWeight:"700",fill:user.color},r.systolic),
-            e('circle',{cx:toX(i),cy:toY(r.diastolic),r:"3.5",fill:"#c084f5",stroke:"white",strokeWidth:"1.5",opacity:"0.8"})
-          ))
-        ),
-        // date range
-        e('div',{ style:{ display:"flex", justifyContent:"space-between", marginTop:6, paddingBottom:2 } },
-          e('span',{style:{fontSize:10,color:"#bbb"}}, chartData[0].date),
-          e('span',{style:{fontSize:10,color:"#bbb"}}, chartData[chartData.length-1].date)
-        ),
-        // legend
-        e('div',{ style:{ display:"flex", gap:16, justifyContent:"center", marginTop:2 } },
-          e('div',{style:{display:"flex",alignItems:"center",gap:5}},
-            e('div',{style:{width:16,height:3,borderRadius:2,background:user.color}}),
-            e('span',{style:{fontSize:10,color:user.color,fontWeight:700}},"収縮期（上）")
-          ),
-          e('div',{style:{display:"flex",alignItems:"center",gap:5}},
-            e('div',{style:{width:16,height:3,borderRadius:2,background:"#c084f5",opacity:0.7}}),
-            e('span',{style:{fontSize:10,color:"#c084f5",fontWeight:700}},"拡張期（下）")
-          )
-        ),
-        // averages
-        userRecords.length >= 2 && e('div',{ style:{ marginTop:10, display:"flex", flexDirection:"column", gap:6 } },
-          e(AveRow,{ label:`グラフ期間平均（${chartData.length}回）`, aSys:Math.round(chartData.reduce((s,r)=>s+r.systolic,0)/chartData.length), aDia:Math.round(chartData.reduce((s,r)=>s+r.diastolic,0)/chartData.length), st:BPStatus(Math.round(chartData.reduce((s,r)=>s+r.systolic,0)/chartData.length)), userColor:user.color }),
-          e(AveRow,{ label:`全期間平均（${userRecords.length}回）`, aSys:Math.round(userRecords.reduce((s,r)=>s+r.systolic,0)/userRecords.length), aDia:Math.round(userRecords.reduce((s,r)=>s+r.diastolic,0)/userRecords.length), st:BPStatus(Math.round(userRecords.reduce((s,r)=>s+r.systolic,0)/userRecords.length)), userColor:user.color })
-        )
-      ),
-      // PDF button
-      userRecords.length > 0 && e('div',{ style:{ textAlign:"center", marginBottom:12 } },
-        e('button',{
-          onClick: function(){ window.print(); },
-          style:{ padding:"12px 32px", borderRadius:16, border:"none", background:user.grad, color:"white", fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:14, cursor:"pointer", boxShadow:`0 4px 16px ${user.color}44` }
-        }, "🖨️ PDF保存")
-      ),
-      // history
-      userRecords.length > 0 && e('div',{ className:"print-card", style:{ background:"rgba(255,255,255,0.88)", borderRadius:22, padding:18, boxShadow:`0 4px 20px ${user.color}18`, border:`1.5px solid ${user.color}22` } },
-        e('p',{ style:{ margin:"0 0 14px", fontFamily:"'M PLUS Rounded 1c',sans-serif", fontWeight:800, fontSize:13, color:"#9999cc" } }, "📋 記録履歴"),
-        e('div',{ style:{ display:"flex", flexDirection:"column", gap:8 } },
-          userRecords.map(r => {
-            const st = BPStatus(r.systolic);
-            return e('div',{ key:r.id, style:{ display:"flex", alignItems:"center", gap:10, padding:"11px 13px", borderRadius:14, background:`linear-gradient(135deg,${user.color}08,#c084f508)`, border:`1px solid ${user.color}18` } },
-              e('div',{ style:{ width:9, height:9, borderRadius:"50%", background:st?.color||"#ccc", flexShrink:0 } }),
-              e('div',{ style:{ flex:1 } },
-                e('span',{ style:{ fontWeight:800, fontSize:21, color:"#444", fontFamily:"'M PLUS Rounded 1c',sans-serif" } }, r.systolic),
-                e('span',{ style:{ color:"#ddd", margin:"0 3px" } }, "/"),
-                e('span',{ style:{ fontWeight:700, fontSize:16, color:"#888" } }, r.diastolic),
-                e('span',{ style:{ fontSize:10, color:"#bbb", marginLeft:3 } }, "mmHg")
-              ),
-              e('div',{ style:{ textAlign:"right", marginRight:4 } },
-                e('div',{ style:{ fontSize:11, color:st?.color, fontWeight:800 } }, st?.label),
-                e('div',{ style:{ fontSize:10, color:"#ccc" } }, r.date+" "+r.time)
-              ),
-              e('button',{ onClick:()=>deleteRecord(r.id), style:{ background:"none", border:"none", color:"#ddd", cursor:"pointer", fontSize:15, padding:"2px 4px" } }, "✕")
-            );
-          })
-        )
-      ),
-      userRecords.length === 0 && e('div',{ style:{ textAlign:"center", padding:"40px 0", color:"#ccc" } },
-        e('div',{ style:{ fontSize:44 } }, "🌸"),
-        e('p',{ style:{ margin:"10px 0 0", fontSize:13, fontFamily:"'M PLUS Rounded 1c',sans-serif" } }, "まだ記録がないよ✿")
-      )
-    )
-  );
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="overflow:visible">
+    <defs>
+      <linearGradient id="sg" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="${u.color}"/><stop offset="100%" stop-color="#c084f5"/>
+      </linearGradient>
+      <linearGradient id="dg" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#c084f5"/><stop offset="100%" stop-color="#7dd3f5"/>
+      </linearGradient>
+    </defs>
+    <line x1="${PAD}" y1="${toY(120)}" x2="${W-PAD}" y2="${toY(120)}" stroke="#5ec4a822" stroke-width="1" stroke-dasharray="3 4"/>
+    <line x1="${PAD}" y1="${toY(130)}" x2="${W-PAD}" y2="${toY(130)}" stroke="#f5c84222" stroke-width="1" stroke-dasharray="3 4"/>
+    <line x1="${PAD}" y1="${toY(140)}" x2="${W-PAD}" y2="${toY(140)}" stroke="#f0707044" stroke-width="1" stroke-dasharray="3 4"/>
+    <polyline points="${pts(diaVals)}" fill="none" stroke="url(#dg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+    <polyline points="${pts(sysVals)}" fill="none" stroke="url(#sg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+  data.forEach((r,i) => {
+    svg += `<circle cx="${toX(i)}" cy="${toY(r.systolic)}" r="4.5" fill="${u.color}" stroke="white" stroke-width="1.5"/>
+      <text x="${toX(i)}" y="${toY(r.systolic)-9}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${u.color}">${r.systolic}</text>
+      <circle cx="${toX(i)}" cy="${toY(r.diastolic)}" r="3.5" fill="#c084f5" stroke="white" stroke-width="1.5" opacity="0.8"/>`;
+  });
+  svg += '</svg>';
+  return svg;
 }
-
-const root = ReactDOM.createRoot(document.getElementById('app'));
-root.render(React.createElement(App));
 </script>
 </body>
 </html>
