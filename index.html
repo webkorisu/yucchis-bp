@@ -106,7 +106,14 @@ select { appearance:none; -webkit-appearance:none; }
       <div class="legend" id="legend"></div>
       <div id="ave-rows"></div>
     </div>
-    <button class="pdf-btn" id="pdf-btn" style="display:none" onclick="window.print()">🖨️ PDF保存</button>
+    <div id="pdf-wrap" style="display:none;text-align:center;margin-bottom:12px"><button id="pdf-btn" style="padding:12px 32px;border-radius:16px;border:none;color:white;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:14px;cursor:pointer" onclick="window.print()">🖨️ PDF保存</button></div>
+    <div id="backup-btns" style="display:none;gap:10px;margin-bottom:18px">
+      <button onclick="exportData()" style="flex:1;padding:11px;border-radius:16px;border:none;background:rgba(255,255,255,0.88);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:13px;cursor:pointer;color:#7b9ef0;border:1.5px solid #7b9ef044">📥 バックアップ保存</button>
+      <label style="flex:1;padding:11px;border-radius:16px;background:rgba(255,255,255,0.88);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:13px;cursor:pointer;color:#c084f5;border:1.5px solid #c084f544;text-align:center;display:flex;align-items:center;justify-content:center">
+        📤 データ復元
+        <input type="file" accept=".json" onchange="importData(event)" style="display:none">
+      </label>
+    </div>
     <div class="card" id="history-card" style="display:none;padding:18px">
       <div class="card-title">📋 記録履歴</div>
       <div id="history-list"></div>
@@ -296,13 +303,14 @@ function deleteRecord(id) {
 function render() {
   const u = USERS[activeUser];
   const records = getRecords()[activeUser] || [];
-  const chartData = [...records].reverse().slice(-14);
+  const chartData = [...records].reverse().slice(-30);
 
   document.getElementById('empty-msg').style.display = records.length === 0 ? 'block' : 'none';
+  document.getElementById('backup-btns').style.display = 'flex';
 
   // PDF btn
   const pdfBtn = document.getElementById('pdf-btn');
-  pdfBtn.style.display = records.length > 0 ? 'block' : 'none';
+  document.getElementById('pdf-wrap').style.display = records.length > 0 ? 'block' : 'none';
   pdfBtn.style.background = u.grad;
   pdfBtn.style.boxShadow = '0 4px 16px ' + u.color + '44';
 
@@ -400,6 +408,37 @@ function renderGraph(data, u) {
   });
   svg += '</svg>';
   return svg;
+}
+
+function exportData() {
+  const all = getRecords();
+  const data = { user: activeUser, records: all[activeUser] || [], exportedAt: new Date().toLocaleString('ja-JP') };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'yucchi-bp-' + USERS[activeUser].name + '-' + new Date().toLocaleDateString('ja-JP').replace(/\//g,'-') + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.records || !Array.isArray(data.records)) throw new Error();
+      if (!confirm('現在の' + USERS[activeUser].name + 'のデータに上書きします。よろしいですか？')) return;
+      const all = getRecords();
+      all[activeUser] = data.records;
+      saveRecords(all);
+      buildSelects(); render();
+      alert('✿ データを復元しました！（' + data.records.length + '件）');
+    } catch { alert('ファイルの読み込みに失敗しました。'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
 }
 </script>
 </body>
