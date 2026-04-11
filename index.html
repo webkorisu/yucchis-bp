@@ -43,10 +43,19 @@ select { appearance:none; -webkit-appearance:none; }
 .del-btn { background:none; border:none; color:#ddd; cursor:pointer; font-size:15px; padding:2px 4px; }
 .empty { text-align:center; padding:40px 0; color:#ccc; }
 @media print {
-  body { background:white !important; }
-  .blob,.pdf-btn,.del-btn,.home-btn,.input-wrap { display:none !important; }
-  .card { box-shadow:none !important; border:1px solid #ddd !important; }
-  .header { position:static; background:white !important; }
+  body { background:white !important; font-size:11px; }
+  .blob, .del-btn, .home-btn, .input-wrap, #pdf-wrap, #backup-btns { display:none !important; }
+  .card { box-shadow:none !important; border:1px solid #eee !important; margin-bottom:8px !important; padding:10px 12px !important; border-radius:8px !important; }
+  .header { position:static !important; background:white !important; border-bottom:1px solid #eee !important; padding:8px 12px !important; }
+  .content { padding:8px 12px !important; }
+  #history-card { page-break-inside:avoid; }
+  .rec-item { padding:5px 8px !important; margin-bottom:3px !important; border-radius:6px !important; }
+  .rec-item span[style*="font-size:21px"] { font-size:14px !important; }
+  .rec-item span[style*="font-size:16px"] { font-size:12px !important; }
+  .rec-item div[style*="font-size:11px"] { font-size:9px !important; }
+  .rec-item div[style*="font-size:10px"] { font-size:9px !important; }
+  #history-list { columns:2; column-gap:8px; }
+  .rec-dot { width:6px !important; height:6px !important; }
 }
 </style>
 </head>
